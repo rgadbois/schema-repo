@@ -55,6 +55,10 @@ public class Config {
   private static final String LOCAL_FILE_SYSTEM_PREFIX = GLOBAL_PREFIX + "local-file-system.";
   public static final String LOCAL_FILE_SYSTEM_PATH = LOCAL_FILE_SYSTEM_PREFIX + "path";
 
+  // Local file system backend configs
+  private static final String REDIS_PREFIX = GLOBAL_PREFIX + "redis.";
+  public static final String REDIS_URL = REDIS_PREFIX + "url";
+
   // ZooKeeper backend configs
   private static final String ZK_PREFIX = GLOBAL_PREFIX + "zookeeper.";
   public static final String ZK_ENSEMBLE = ZK_PREFIX + "ensemble";
