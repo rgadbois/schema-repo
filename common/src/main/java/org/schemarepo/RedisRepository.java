@@ -47,12 +47,6 @@ public class RedisRepository extends AbstractBackendRepository {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final String SUBJECTS_KEY = "subjects";
-    private static final String SUBJECT_KEY_PATH = "subject.";
-    private static final String LAST_KEY_PATH = ".last";
-    private static final String CONFIG_KEY_PATH = ".config";
-
-
     private final String redisUrl;
     private final ShardedJedis jedis;
     /**
@@ -78,9 +72,9 @@ public class RedisRepository extends AbstractBackendRepository {
 
         // eagerly load up subjects
         SubjectConfig config = null;
-        Set<String> subjects = jedis.smembers(SUBJECTS_KEY);
+        Set<String> subjects = jedis.smembers(Config.SUBJECTS_KEY);
         for (String subjectName : subjects) {
-            Map<String, String> propData = jedis.hgetAll(SUBJECT_KEY_PATH + subjectName + CONFIG_KEY_PATH);
+            Map<String, String> propData = jedis.hgetAll(Config.SUBJECT_KEY_PATH + subjectName + Config.CONFIG_KEY_PATH);
             config = new SubjectConfig.Builder().set(propData).build();
             subjectCache.add(new RedisSubject(subjectName, config, jedis));
         }
@@ -116,10 +110,10 @@ public class RedisRepository extends AbstractBackendRepository {
     }
     @Override
     protected void registerSubjectInBackend(final String subjectName, final SubjectConfig config) {
-        jedis.sadd(SUBJECTS_KEY, subjectName);
+        jedis.sadd(Config.SUBJECTS_KEY, subjectName);
         final Map<String, String> values = config.asMap();
         for (String key : values.keySet()) {
-            jedis.hset(SUBJECT_KEY_PATH + subjectName + CONFIG_KEY_PATH, key, values.get(key));
+            jedis.hset(Config.SUBJECT_KEY_PATH + subjectName + Config.CONFIG_KEY_PATH, key, values.get(key));
         }
         cacheSubject(new RedisSubject(subjectName, config, jedis));
     }
@@ -154,8 +148,8 @@ public class RedisRepository extends AbstractBackendRepository {
         public synchronized SchemaEntry register(String schema)
                 throws SchemaValidationException {
 
-            final Long last = jedis.incr(SUBJECT_KEY_PATH + getName() + LAST_KEY_PATH);
-            jedis.hset(SUBJECT_KEY_PATH + getName(), last.toString(), schema);
+            final Long last = jedis.incr(Config.SUBJECT_KEY_PATH + getName() + Config.LAST_KEY_PATH);
+            jedis.hset(Config.SUBJECT_KEY_PATH + getName(), last.toString(), schema);
 
             return new SchemaEntry(last.toString(), schema);
         }
@@ -174,7 +168,7 @@ public class RedisRepository extends AbstractBackendRepository {
 
         @Override
         public SchemaEntry lookupBySchema(String schema) {
-            final Map<String,String> redisSchemas = jedis.hgetAll(SUBJECT_KEY_PATH + getName());
+            final Map<String,String> redisSchemas = jedis.hgetAll(Config.SUBJECT_KEY_PATH + getName());
             if ((redisSchemas != null) && !redisSchemas.isEmpty()) {
                 for (String key : redisSchemas.keySet()) {
                     String value = redisSchemas.get(key);
@@ -188,7 +182,7 @@ public class RedisRepository extends AbstractBackendRepository {
 
         @Override
         public SchemaEntry lookupById(String id) {
-            final String schema = jedis.hget(SUBJECT_KEY_PATH + getName(), id);
+            final String schema = jedis.hget(Config.SUBJECT_KEY_PATH + getName(), id);
             if ((schema != null) && !schema.isEmpty()) {
                 return new SchemaEntry(id, schema);
             }
@@ -197,7 +191,7 @@ public class RedisRepository extends AbstractBackendRepository {
 
         @Override
         public synchronized SchemaEntry latest() {
-            final String last = jedis.get(SUBJECT_KEY_PATH + getName() + LAST_KEY_PATH);
+            final String last = jedis.get(Config.SUBJECT_KEY_PATH + getName() + Config.LAST_KEY_PATH);
             if ((last != null) && !last.isEmpty()) {
                 return  lookupById(last);
             }
@@ -207,7 +201,7 @@ public class RedisRepository extends AbstractBackendRepository {
         @Override
         public synchronized Iterable<SchemaEntry> allEntries() {
             final List<SchemaEntry> entries = new ArrayList<SchemaEntry>();
-            final Map<String,String> redisSchemas = jedis.hgetAll(SUBJECT_KEY_PATH + getName());
+            final Map<String,String> redisSchemas = jedis.hgetAll(Config.SUBJECT_KEY_PATH + getName());
             if ((redisSchemas != null) && !redisSchemas.isEmpty()) {
                 for (String key : redisSchemas.keySet()) {
                     entries.add(new SchemaEntry(key, redisSchemas.get(key)));

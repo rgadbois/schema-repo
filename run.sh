@@ -19,8 +19,8 @@ elif [[ $1 == 'file-system' ]]; then
 	java -cp bundle/target/schema-repo-bundle-*-withdeps.jar org.schemarepo.server.RepositoryServer bundle/config/local-file-system-config.properties
 elif [[ $1 == 'redis' ]]; then
 	echo "Starting Schema Repo Server with Redis backend"
-	java -cp bundle/target/schema-repo-zk-bundle-*-withdeps.jar org.schemarepo.server.RepositoryServer bundle/config/redis-config.properties
-elif [[ $1 == 'redis' ]]; then
+	java -cp bundle/target/schema-repo-bundle-*-withdeps.jar org.schemarepo.server.RepositoryServer bundle/config/redis-config.properties
+elif [[ $1 == 'zookeeper' ]]; then
 	echo "Starting Schema Repo Server with ZooKeeper backend"
 	java -cp zk-bundle/target/schema-repo-zk-bundle-*-withdeps.jar org.schemarepo.server.RepositoryServer zk-bundle/config/config.properties
 else

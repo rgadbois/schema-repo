@@ -55,9 +55,15 @@ public class Config {
   private static final String LOCAL_FILE_SYSTEM_PREFIX = GLOBAL_PREFIX + "local-file-system.";
   public static final String LOCAL_FILE_SYSTEM_PATH = LOCAL_FILE_SYSTEM_PREFIX + "path";
 
-  // Local file system backend configs
+  // Redis config and keys
   private static final String REDIS_PREFIX = GLOBAL_PREFIX + "redis.";
   public static final String REDIS_URL = REDIS_PREFIX + "url";
+  public static final String SUBJECTS_KEY = Config.REDIS_PREFIX + "subjects";
+  public static final String SUBJECT_KEY_PATH = Config.REDIS_PREFIX + "subject.";
+  public static final String LAST_KEY_PATH = ".last";
+  public static final String CONFIG_KEY_PATH = ".config";
+
+
 
   // ZooKeeper backend configs
   private static final String ZK_PREFIX = GLOBAL_PREFIX + "zookeeper.";
